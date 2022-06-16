@@ -38,7 +38,10 @@ public class window extends JFrame implements MouseListener
     		partie.subcarre(x, y);
     	partie.repaint();
     	if(partie.check())
-			System.out.println("correct !");
+    	{
+    		this.removeMouseListener(this);
+    		partie.setwin();
+    	}
 	}
 	
 	

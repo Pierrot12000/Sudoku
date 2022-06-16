@@ -13,9 +13,12 @@ public class map extends JComponent
 	private Vector<Shape> base_grille= new Vector<Shape>();
 	private int [][] chiffres=new int [9][9]; //tableau contenant la grille a remplir
 	private boolean [][] fixed=new boolean [9][9]; //tableau qui indique si une case peu etre modifiee
+	private boolean win;
 	
 	public map() //constructeur
 	{
+		win=false;
+		
 		this.base_grille.addElement(new Line2D.Double(0, 0, 600, 0));
 		this.base_grille.addElement(new Line2D.Double(0, 66, 600, 66));
 		this.base_grille.addElement(new Line2D.Double(0, 132, 600, 132));
@@ -45,7 +48,8 @@ public class map extends JComponent
 			}
 		}
 		
-		int value;												//partie pour générer un sodoku entier aléatoirement
+		int value; //partie pour générer un sodoku entier aléatoirement
+		int fail=0; //compteur pour verifier si mon miserable programme n'a pas genere un sudoku impossible 
 		Vector <Integer> tries=new Vector<Integer>();
 		for(int y=0; y<9; y++)
 		{
@@ -60,9 +64,25 @@ public class map extends JComponent
 					}
 					else if(tries.size()==9) //si on a essayé les 9 valeurs pour une case et que aucune ne va
 					{
-						for(int i=0; i<9; i++)
+						if(fail>50)
 						{
-							chiffres[i][y]=0; //on efface toute la ligne
+							y=0;
+							fail=0;
+							for(int j=0; j<9; j++)
+							{
+								for(int i=0; i<9; i++)
+								{
+									chiffres[i][j]=0;
+								}
+							}
+						}
+						else
+						{
+							for(int i=0; i<9; i++)
+							{
+								chiffres[i][y]=0; //on efface toute la ligne
+								fail++;
+							}
 						}
 						x=0;
 						tries=new Vector<Integer>();
@@ -72,6 +92,7 @@ public class map extends JComponent
 				chiffres[x][y]=value;
 				tries=new Vector<Integer>(); //on reinitialise le tableau
 			}
+			fail=0;
 		}
 		
 		System.out.println("solution :");
@@ -311,6 +332,11 @@ public class map extends JComponent
 		return true;
 	}
 	
+	public void setwin()
+	{
+		win=true;
+	}
+	
 	protected void paintComponent(Graphics g)
 	{
 		Graphics2D surface= (Graphics2D)g;
@@ -343,6 +369,13 @@ public class map extends JComponent
 					surface.drawString(Integer.toString(chiffres[x][y]), x*66+20, y*66+47);
 				}
 			}
+		}
+		
+		if(win)
+		{
+			surface.setFont(new Font("wincondition", Font.BOLD, 160));
+			surface.setColor(new Color(232, 59, 39));
+			surface.drawString("Bravo !", 30, 360);
 		}
 		/*try 
 		{
